@@ -6,6 +6,7 @@ authors = ["Mehmet Aktas <mehmet@overjet.ai>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
+simpy = "^4.0.1"
 
 [tool.poetry.dev-dependencies]
 

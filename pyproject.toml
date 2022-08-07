@@ -3,6 +3,9 @@ name = "deanonymize-tor"
 version = "0.1.0"
 description = ""
 authors = ["Mehmet Aktas <mehmet@overjet.ai>"]
+packages = [
+    { include = "src" }
+]
 
 [tool.poetry.dependencies]
 python = "^3.9,<3.12"
@@ -23,12 +26,12 @@ build-backend = "poetry.core.masonry.api"
 [tool.pytest.ini_options]
 minversion = "6.1"
 log_cli = "true"
-log_cli_level = "INFO"
+log_cli_level = "DEBUG"
 ## Note (mehmet@overjet.ai): This will allow pytest to print out all the
 ## logging output to cli.
 # log_cli_level = "NOTSET"
 # log_cli_format = "%(levelname)s:%(filename)s:%(lineno)s-%(funcName)s: %(message)s"
-addopts = "--cov --show-capture=stderr"
+addopts = "--show-capture=stderr"
 testpaths = [
     "tests",
 ]

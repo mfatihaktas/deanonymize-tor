@@ -5,11 +5,30 @@ description = ""
 authors = ["Mehmet Aktas <mehmet@overjet.ai>"]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.9,<3.12"
 simpy = "^4.0.1"
+pytest = "^7.1.2"
+matplotlib = "^3.5.2"
+scipy = "^1.9.0"
+isort = "^5.10.1"
+black = "^22.6.0"
+flake8 = "^5.0.4"
 
 [tool.poetry.dev-dependencies]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+minversion = "6.1"
+log_cli = "true"
+log_cli_level = "INFO"
+## Note (mehmet@overjet.ai): This will allow pytest to print out all the
+## logging output to cli.
+# log_cli_level = "NOTSET"
+# log_cli_format = "%(levelname)s:%(filename)s:%(lineno)s-%(funcName)s: %(message)s"
+addopts = "--cov --show-capture=stderr"
+testpaths = [
+    "tests",
+]

@@ -1,6 +1,7 @@
 import simpy
 
-from src.sim.message import message
+from src.sim import message
+
 from src.debug_utils import *
 
 

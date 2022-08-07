@@ -3,7 +3,7 @@ import simpy
 from src.prob import random_variable
 from src.sim import (
     message,
-    node_module,
+    node as node_module,
 )
 
 from src.debug_utils import *
@@ -22,15 +22,17 @@ class Network(node_module.Node):
         self.id_to_node_map = {}
 
     def __repr__(self):
-        return (
-            "Network( \n"
-            f"{super().__repr__()} \n"
-            ")"
-        )
+        # return (
+        #     "Network( \n"
+        #     f"{super().__repr__()} \n"
+        #     ")"
+        # )
 
-    def register(node: node_module.Node):
+        return f"Network(id= {self._id})"
+
+    def register(self, node: node_module.Node):
         self.id_to_node_map[node._id] = node
-        log(DEBUG, "Done", dst_id=dst_id, node=node)
+        log(DEBUG, "Done", node=node)
 
     def put(self, msg: message.Message):
         slog(DEBUG, self.env, self, "recved", msg=msg)
@@ -48,18 +50,17 @@ class Network_wZeroDelay(Network):
         self.process_run = env.process(self.run())
 
     def __repr__(self):
-        return (
-            "Network_wZeroDelay( \n"
-            f"{super().__repr__()} \n"
-            ")"
-        )
+        # return (
+        #     "Network_wZeroDelay( \n"
+        #     f"{super().__repr__()} \n"
+        #     ")"
+        # )
+
+        return f"Network_wZeroDelay(id= {self._id})"
 
     def run(self):
         while True:
             msg = yield self.msg_store.get()
-            check(msg._id in self.id_to_node_map,
-                  "A msg for an unregistered node arrived"
-                  msg=msg, id_to_node_map=self.id_to_node_map)
 
             dst_node = self.id_to_node_map[msg.dst_id]
             slog(DEBUG, self.env, self, "forwarding", msg=msg, dst_node=dst_node)

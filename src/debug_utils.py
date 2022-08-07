@@ -122,7 +122,7 @@ def pstr(**kwargs):
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  Sim log  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 def slog(level: int, env, caller: str, _msg_: str, **kwargs):
-        level_log_m[level]("t: {:.2f}] {}: {}\n{}".format(env.now, caller, _msg_, pstr(**kwargs)), extra=get_extra())
+        level_log_m[level]("t: {:.2f}] {}: {} {}".format(env.now, caller, _msg_, pstr(**kwargs)), extra=get_extra())
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  Assert  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #

@@ -14,9 +14,15 @@ from src.debug_utils import *
 def test_network_w_one_client_server():
     env = simpy.Environment()
 
-    network = network_module.Network_wZeroDelay(
+    # network = network_module.Network_wZeroDelay(
+    #     env=env,
+    #     _id="n",
+    # )
+
+    network = network_module.Network_wDelayAssignedPerMessage(
         env=env,
         _id="n",
+        delay_rv=random_variable.DiscreteUniform(min_value=1, max_value=5),
     )
 
     server = server_module.Server(
@@ -37,5 +43,6 @@ def test_network_w_one_client_server():
     )
 
     log(INFO, "env.run starting")
-    env.run(until=server.process_recv_messages)
+    # env.run(until=server.process_recv_messages)
+    env.run(until=10)
     log(INFO, "env.run done")

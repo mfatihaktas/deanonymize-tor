@@ -16,7 +16,6 @@ class Server(node.Node):
         num_msgs_to_recv: int = None,
     ):
         super().__init__(env=env, _id=_id)
-
         self.num_msgs_to_recv = num_msgs_to_recv
 
         self.msg_store = simpy.Store(env)

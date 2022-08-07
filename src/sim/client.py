@@ -20,7 +20,6 @@ class Client(node.Node):
         num_msgs_to_send: int = None,
     ):
         super().__init__(env=env, _id=_id)
-
         self.dst_id = dst_id
         self.num_msgs_to_send = num_msgs_to_send
         self.inter_msg_gen_time_rv = inter_msg_gen_time_rv

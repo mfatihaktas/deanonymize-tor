@@ -36,23 +36,22 @@ class CustomFormatter(logging.Formatter):
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  Log  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
-# LOGGING_FORMAT = "%(levelname)s] %(func_name)s: %(msg)s"
-LOGGING_FORMAT = "%(levelname)s] %(file_name)s:%(line_number)s-%(func_name)s: %(message)s"
+LOGGING_FORMAT = "%(levelname)s] %(file_name)s:%(line_number)s - %(func_name)s: %(message)s"
 # LOGGING_FORMAT = "%(levelname)s:%(filename)s:%(lineno)s-%(funcName)s: %(message)s"
 
-# formatter = logging.Formatter(LOGGING_FORMAT)
-formatter = CustomFormatter()
+formatter = logging.Formatter(LOGGING_FORMAT)
+# formatter = CustomFormatter()
 
-LOGGER_NAME = "serv_rate"
+# LOGGER_NAME = "serv_rate"
 # logging.basicConfig(level=logging.INFO) #, format=LOGGING_FORMAT)
-logger = logging.getLogger(LOGGER_NAME)
+logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 
 def log_to_std():
-    logger = logging.getLogger(LOGGER_NAME)
+    # logger = logging.getLogger(LOGGER_NAME)
     # TODO: Not sure why this was needed to silence the
     # annoying duplicate logging.
-    logger.handlers.clear()
+    # logger.handlers.clear()
 
     sh = logging.StreamHandler()
     sh.setFormatter(formatter)
@@ -89,15 +88,11 @@ def log_to_file(filename, directory=None):
 
 
 def get_extra():
-    # frame = inspect.currentframe().f_back.f_back.f_code
-    callerframerecord = inspect.stack()[2]  # 0: this line, 1: line at caller
-    frame = callerframerecord[0]
-    frame_info = inspect.getframeinfo(frame)
+    frame, file_path, lineno, function, code_context, index = inspect.stack()[2]
     return {
-        # "func_name": "{}::{}".format(os.path.split(frame.co_filename)[1], frame.co_name)
-        "file_name": os.path.split(frame_info.filename)[1],
-        "func_name": frame_info.function,
-        "line_number": frame_info.lineno,
+        "file_name": os.path.split(file_path)[1],
+        "func_name": function,
+        "line_number": lineno,
     }
 
 
@@ -122,7 +117,7 @@ def pstr(**kwargs):
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  Sim log  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 def slog(level: int, env, caller: str, _msg_: str, **kwargs):
-        level_log_m[level]("t: {:.2f}] {}: {} {}".format(env.now, caller, _msg_, pstr(**kwargs)), extra=get_extra())
+    level_log_m[level]("t: {:.2f}] {}: {} {}".format(env.now, caller, _msg_, pstr(**kwargs)), extra=get_extra())
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  Assert  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #

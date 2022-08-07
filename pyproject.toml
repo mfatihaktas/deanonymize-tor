@@ -31,7 +31,8 @@ log_cli_level = "DEBUG"
 ## logging output to cli.
 # log_cli_level = "NOTSET"
 # log_cli_format = "%(levelname)s:%(filename)s:%(lineno)s-%(funcName)s: %(message)s"
-addopts = "--show-capture=stderr"
+log_cli_format = "%(levelname)s] %(file_name)s:%(line_number)s - %(func_name)s: %(message)s"
+# addopts = "--show-capture=stderr"
 testpaths = [
     "tests",
 ]

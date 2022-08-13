@@ -25,10 +25,11 @@ def test_network_w_one_client_server():
         delay_rv=random_variable.DiscreteUniform(min_value=1, max_value=5),
     )
 
+    num_msgs_to_recv = 10
     server = server_module.Server(
         env=env,
         _id="s0",
-        num_msgs_to_recv=10
+        num_msgs_to_recv=num_msgs_to_recv,
     )
 
     network.register(node=server)
@@ -39,10 +40,8 @@ def test_network_w_one_client_server():
         dst_id=server._id,
         inter_msg_gen_time_rv=random_variable.Exponential(mu=1),
         next_hop=network,
-        num_msgs_to_send=10,
+        num_msgs_to_send=num_msgs_to_recv,
     )
 
-    log(INFO, "env.run starting")
-    # env.run(until=server.process_recv_messages)
-    env.run(until=10)
-    log(INFO, "env.run done")
+    env.run(until=server.process_recv_messages)
+    # env.run(until=100)

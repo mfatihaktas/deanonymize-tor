@@ -18,6 +18,8 @@ class Server(node.Node):
         super().__init__(env=env, _id=_id)
         self.num_msgs_to_recv = num_msgs_to_recv
 
+        self.adversary = None
+
         self.msg_store = simpy.Store(env)
         self.process_recv_messages = env.process(self.recv_messages())
 
@@ -32,6 +34,10 @@ class Server(node.Node):
 
     def put(self, msg: message.Message):
         slog(DEBUG, self.env, self, "recved", msg=msg)
+
+        if self.adversary:
+            self.adversary.server_recved_msg(msg)
+
         self.msg_store.put(msg)
 
     def recv_messages(self):

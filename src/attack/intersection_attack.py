@@ -1,15 +1,20 @@
 import heapq
 import simpy
 
+from src.attack import adversary as adversary_module
 from src.sim import (
+    client as client_module,
     message,
     node as node_module,
+    server as server_module,
 )
+
+from src.debug_utils import *
 
 
 class IntersectionAttack:
-    def __init__(self, initial_candidate_set: set[str]):
-        self.candidate_set = set(initial_candidate_set)
+    def __init__(self):
+        self.candidate_set = None
 
     def __repr__(self):
         return (
@@ -17,12 +22,15 @@ class IntersectionAttack:
             f"\t candidate_set= {self.candidate_set} \n"
             ")"
         )
-.
+
     def get_number_of_candidates(self):
         return len(self.candidate_set)
 
     def update(self, candidate_set: set[str]):
-        self.candidate_set = self.candidate_set.intersection(candidate_set)
+        if self.candidate_set is None:
+            self.candidate_set = candidate_set
+        else:
+            self.candidate_set = self.candidate_set.intersection(candidate_set)
 
 
 class AttackWindow:
@@ -34,12 +42,12 @@ class AttackWindow:
         self.start_time = start_time
         self.end_time = end_time
 
-        self.candidate_set = {}
+        self.candidate_set = set()
 
-    def add_candidate(candidate: str):
+    def add_candidate(self, candidate: str):
         self.candidate_set.add(candidate)
 
-    def __lt__(self, other_attack_window: AttackWindow):
+    def __lt__(self, other_attack_window) -> bool:
         return (
             self.end_time < other_attack_window.end_time or
             (
@@ -49,16 +57,18 @@ class AttackWindow:
         )
 
 
-class Adversary_wIntersectionAttack:
+class Adversary_wIntersectionAttack(adversary_module.Adversary):
     def __init__(
         self,
         env: simpy.Environment,
         max_msg_delivery_time: float,
         num_target_client: int,
     ):
-        self.env = env
-        self.max_msg_delivery_time = max_msg_delivery_time
-        self.num_target_client = num_target_client
+        super().__init__(
+            env=env,
+            max_msg_delivery_time=max_msg_delivery_time,
+            num_target_client=num_target_client,
+        )
 
         self.active_attack_window_heapq: list[AttackWindow] = []
         self.completed_attack_window_list: list[AttackWindow] = []
@@ -72,18 +82,18 @@ class Adversary_wIntersectionAttack:
     def __repr__(self):
         return f"Adversary_wIntersectionAttack(max_msg_delivery_time= {self.max_msg_delivery_time})"
 
-    def inform_about_msg(self, node: node_module.Node):
-        if isinstance(node, client_module.Client):
-            self.target_client_sent_msg(client_id=node._id)
-        elif isinstance(node, server_module.Server):
-            self.candidate_server_recved_msg(server_id=node._id)
-        else:
-            raise RuntimeError(
-                "Unexpected node type \n"
-                f"\t node= {node}"
-            )
+    # def put(self, node: node_module.Node):
+    #     if isinstance(node, client_module.Client):
+    #         self.client_sent_msg(client_id=node._id)
+    #     elif isinstance(node, server_module.Server):
+    #         self.server_recved_msg(server_id=node._id)
+    #     else:
+    #         raise RuntimeError(
+    #             "Unexpected node type \n"
+    #             f"\t node= {node}"
+    #         )
 
-    def target_client_sent_msg(self, client_id: str):
+    def client_sent_msg(self, client_id: str):
         slog(DEBUG, self.env, self, "recved; starting new attack window", client_id=client_id)
 
         attack_window = AttackWindow(
@@ -101,11 +111,11 @@ class Adversary_wIntersectionAttack:
         if self.interrupt_attack:
             self.interrupt_attack.succeed()
 
-    def candidate_server_recved_msg(self, server_id: str):
+    def server_recved_msg(self, server_id: str):
         slog(DEBUG, self.env, self, "recved", server_id=server_id)
 
         for attack_window in self.active_attack_window_heapq:
-            attack_window.add_candidate(candidate)
+            attack_window.add_candidate(candidate=server_id)
 
     def run_attack(self):
         slog(DEBUG, self.env, self, "started")

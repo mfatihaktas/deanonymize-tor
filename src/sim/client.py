@@ -1,5 +1,6 @@
 import simpy
 
+from src.attack import adversary as adversary_module
 from src.prob import random_variable
 from src.sim import (
     message,
@@ -14,16 +15,18 @@ class Client(node.Node):
         self,
         env: simpy.Environment,
         _id: str,
-        dst_id: str,
         inter_msg_gen_time_rv: random_variable.RandomVariable,
-        next_hop: node.Node,
         num_msgs_to_send: int = None,
     ):
         super().__init__(env=env, _id=_id)
-        self.dst_id = dst_id
         self.num_msgs_to_send = num_msgs_to_send
         self.inter_msg_gen_time_rv = inter_msg_gen_time_rv
-        self.next_hop = next_hop
+
+        # To be set while getting connected to the network
+        self.next_hop = None
+        self.dst_id = None
+
+        self.adversary: adversary_module.Adversary = None
 
         self.process_send_messages = env.process(self.send_messages())
 
@@ -51,6 +54,8 @@ class Client(node.Node):
             msg = message.Message(_id=msg_id, src_id=self._id, dst_id=self.dst_id)
             slog(DEBUG, self.env, self, "sending", msg=msg)
             self.next_hop.put(msg)
+            if self.adversary:
+                self.adversary.client_sent_msg(client_id=self._id)
 
             msg_id += 1
             if self.num_msgs_to_send and msg_id >= self.num_msgs_to_send:

@@ -138,8 +138,11 @@ class Adversary_wIntersectionAttack(adversary_module.Adversary):
                 self.intersection_attack.update(candidate_set=attack_window.candidate_set)
 
                 if self.intersection_attack.get_number_of_candidates() == self.num_target_client:
-                    slog(DEBUG, self.env, self, "found the targets!", num_target_client=self.num_target_client, target=self.intersection_attack.candidate_set)
+                    slog(DEBUG, self.env, self, "found the target(s)!", num_target_client=self.num_target_client, target=self.intersection_attack.candidate_set)
+                    break
 
             else:
                 slog(DEBUG, self.env, self, "wait interrupted by new attack window")
                 self.attack_window_store.put(attack_window)
+
+        slog(DEBUG, self.env, self, "done")

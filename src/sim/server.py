@@ -1,12 +1,8 @@
 import simpy
 
 from src.attack import adversary as adversary_module
-from src.sim import (
-    message,
-    node,
-)
-
 from src.debug_utils import *
+from src.sim import message, node
 
 
 class Server(node.Node):
@@ -48,7 +44,14 @@ class Server(node.Node):
         while True:
             msg = yield self.msg_store.get()
             num_msgs_recved += 1
-            slog(DEBUG, self.env, self, "processed", num_msgs_recved=num_msgs_recved, msg=msg)
+            slog(
+                DEBUG,
+                self.env,
+                self,
+                "processed",
+                num_msgs_recved=num_msgs_recved,
+                msg=msg,
+            )
 
             if self.num_msgs_to_recv and num_msgs_recved >= self.num_msgs_to_recv:
                 break

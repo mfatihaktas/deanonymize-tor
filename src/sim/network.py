@@ -1,15 +1,13 @@
 import heapq
+
 import simpy
 
-from src.prob import random_variable
-from src.sim import (
-    client as client_module,
-    message,
-    node as node_module,
-    server as server_module,
-)
-
 from src.debug_utils import *
+from src.prob import random_variable
+from src.sim import client as client_module
+from src.sim import message
+from src.sim import node as node_module
+from src.sim import server as server_module
 
 
 class Network(node_module.Node):

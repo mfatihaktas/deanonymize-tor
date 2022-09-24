@@ -1,15 +1,13 @@
 import heapq
+
 import simpy
 
 from src.attack import adversary as adversary_module
-from src.sim import (
-    client as client_module,
-    message,
-    node as node_module,
-    server as server_module,
-)
-
 from src.debug_utils import *
+from src.sim import client as client_module
+from src.sim import message
+from src.sim import node as node_module
+from src.sim import server as server_module
 
 
 class IntersectionAttack:
@@ -17,11 +15,7 @@ class IntersectionAttack:
         self.candidate_set = None
 
     def __repr__(self):
-        return (
-            "IntersectionAttack( \n"
-            f"\t candidate_set= {self.candidate_set} \n"
-            ")"
-        )
+        return "IntersectionAttack( \n" f"\t candidate_set= {self.candidate_set} \n" ")"
 
     def get_number_of_candidates(self):
         return len(self.candidate_set)
@@ -48,12 +42,9 @@ class AttackWindow:
         self.candidate_set.add(candidate)
 
     def __lt__(self, other_attack_window) -> bool:
-        return (
-            self.end_time < other_attack_window.end_time or
-            (
-                self.end_time == other_attack_window.end_time and
-                self.begin_time < other_attack_window.begin_time
-            )
+        return self.end_time < other_attack_window.end_time or (
+            self.end_time == other_attack_window.end_time
+            and self.begin_time < other_attack_window.begin_time
         )
 
 
@@ -94,11 +85,16 @@ class Adversary_wIntersectionAttack(adversary_module.Adversary):
     #         )
 
     def client_sent_msg(self, client_id: str):
-        slog(DEBUG, self.env, self, "recved; starting new attack window", client_id=client_id)
+        slog(
+            DEBUG,
+            self.env,
+            self,
+            "recved; starting new attack window",
+            client_id=client_id,
+        )
 
         attack_window = AttackWindow(
-            start_time=self.env.now,
-            end_time=self.env.now + self.max_msg_delivery_time
+            start_time=self.env.now, end_time=self.env.now + self.max_msg_delivery_time
         )
 
         heapq.heappush(self.active_attack_window_heapq, attack_window)
@@ -118,7 +114,7 @@ class Adversary_wIntersectionAttack(adversary_module.Adversary):
             attack_window.add_candidate(candidate=server_id)
 
     def run_attack(self):
-        slog(DEBUG, self.env, self, "started")
+        slog(DEBUG, self.env, self, "Started")
 
         while True:
             yield self.attack_window_store.get()
@@ -126,7 +122,7 @@ class Adversary_wIntersectionAttack(adversary_module.Adversary):
             attack_window = self.active_attack_window_heapq[0]
             wait_time = attack_window.end_time - self.env.now
 
-            slog(DEBUG, self.env, self, "waiting for trigger", wait_time=wait_time)
+            slog(DEBUG, self.env, self, "Waiting for trigger", wait_time=wait_time)
             self.interrupt_attack = self.env.event()
             yield self.env.timeout(wait_time) | self.interrupt_attack
             self.interrupt_attack = None
@@ -134,15 +130,33 @@ class Adversary_wIntersectionAttack(adversary_module.Adversary):
             if self.env.now - attack_window.end_time >= 0:
                 attack_window = heapq.heappop(self.active_attack_window_heapq)
 
-                slog(DEBUG, self.env, self, "updating intersection attack", candidate_set=attack_window.candidate_set)
-                self.intersection_attack.update(candidate_set=attack_window.candidate_set)
+                slog(
+                    DEBUG,
+                    self.env,
+                    self,
+                    "Updating intersection attack",
+                    candidate_set=attack_window.candidate_set,
+                )
+                self.intersection_attack.update(
+                    candidate_set=attack_window.candidate_set
+                )
 
-                if self.intersection_attack.get_number_of_candidates() == self.num_target_client:
-                    slog(DEBUG, self.env, self, "found the target(s)!", num_target_client=self.num_target_client, target=self.intersection_attack.candidate_set)
+                if (
+                    self.intersection_attack.get_number_of_candidates()
+                    == self.num_target_client
+                ):
+                    slog(
+                        DEBUG,
+                        self.env,
+                        self,
+                        "Found the target(s)!",
+                        num_target_client=self.num_target_client,
+                        target=self.intersection_attack.candidate_set,
+                    )
                     break
 
             else:
-                slog(DEBUG, self.env, self, "wait interrupted by new attack window")
+                slog(DEBUG, self.env, self, "Wait interrupted by new attack window")
                 self.attack_window_store.put(attack_window)
 
-        slog(DEBUG, self.env, self, "done")
+        slog(DEBUG, self.env, self, "Done")

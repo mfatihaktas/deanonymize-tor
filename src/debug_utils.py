@@ -26,7 +26,7 @@ class CustomFormatter(logging.Formatter):
         logging.INFO: green + format + reset,
         logging.WARNING: yellow + format + reset,
         logging.ERROR: red + format + reset,
-        logging.CRITICAL: blink_red + format + reset
+        logging.CRITICAL: blink_red + format + reset,
     }
 
     def format(self, record):
@@ -36,7 +36,9 @@ class CustomFormatter(logging.Formatter):
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  Log  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
-LOGGING_FORMAT = "%(levelname)s] %(file_name)s:%(line_number)s - %(func_name)s: %(message)s"
+LOGGING_FORMAT = (
+    "%(levelname)s] %(file_name)s:%(line_number)s - %(func_name)s: %(message)s"
+)
 # LOGGING_FORMAT = "%(levelname)s:%(filename)s:%(lineno)s-%(funcName)s: %(message)s"
 
 formatter = logging.Formatter(LOGGING_FORMAT)
@@ -47,6 +49,7 @@ formatter = logging.Formatter(LOGGING_FORMAT)
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 
+
 def log_to_std():
     # logger = logging.getLogger(LOGGER_NAME)
     # TODO: Not sure why this was needed to silence the
@@ -56,6 +59,7 @@ def log_to_std():
     sh = logging.StreamHandler()
     sh.setFormatter(formatter)
     logger.addHandler(sh)
+
 
 log_to_std()
 
@@ -117,7 +121,10 @@ def pstr(**kwargs):
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  Sim log  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 def slog(level: int, env, caller: str, _msg_: str, **kwargs):
-    level_log_m[level]("t: {:.2f}] {}: {} {}".format(env.now, caller, _msg_, pstr(**kwargs)), extra=get_extra())
+    level_log_m[level](
+        "t: {:.2f}] {}: {} {}".format(env.now, caller, _msg_, pstr(**kwargs)),
+        extra=get_extra(),
+    )
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  Assert  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #

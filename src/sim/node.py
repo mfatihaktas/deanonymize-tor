@@ -1,8 +1,7 @@
 import simpy
 
-from src.sim import message
-
 from src.debug_utils import *
+from src.sim import message
 
 
 class Node:
@@ -11,8 +10,4 @@ class Node:
         self._id = _id
 
     def __repr__(self):
-        return (
-            "Node( \n"
-            f"\t id= {self._id} \n"
-            ")"
-        )
+        return "Node( \n" f"\t id= {self._id} \n" ")"

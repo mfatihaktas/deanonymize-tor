@@ -3,11 +3,9 @@ import simpy
 
 from src.attack import intersection_attack
 from src.prob import random_variable
-from src.sim import (
-    client as client_module,
-    network as network_module,
-    server as server_module,
-)
+from src.sim import client as client_module
+from src.sim import network as network_module
+from src.sim import server as server_module
 
 from src.debug_utils import *
 
@@ -17,26 +15,17 @@ def env() -> simpy.Environment:
     return simpy.Environment()
 
 
-@pytest.fixture(
-    scope="module",
-    params=[1]
-)
+@pytest.fixture(scope="module", params=[1])
 def num_clients(request) -> int:
     return request.param
 
 
-@pytest.fixture(
-    scope="module",
-    params=[1]
-)
+@pytest.fixture(scope="module", params=[1])
 def num_servers(request) -> int:
     return request.param
 
 
-@pytest.fixture(
-    scope="module",
-    params=[10]
-)
+@pytest.fixture(scope="module", params=[10])
 def num_msgs(request) -> int:
     return request.param
 
@@ -45,7 +34,7 @@ def num_msgs(request) -> int:
     scope="module",
     params=[
         random_variable.Exponential(mu=1),
-    ]
+    ],
 )
 def inter_msg_gen_time_rv(request) -> int:
     return request.param
@@ -126,7 +115,11 @@ def test_network_w_one_client_server(
 ):
     env = network.env
 
-    env.run(until=env.all_of(server.process_recv_messages for server in network.get_server_list()))
+    env.run(
+        until=env.all_of(
+            server.process_recv_messages for server in network.get_server_list()
+        )
+    )
     # env.run(until=100)
 
 

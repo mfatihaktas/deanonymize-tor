@@ -1,13 +1,9 @@
 import simpy
 
 from src.attack import adversary as adversary_module
-from src.prob import random_variable
-from src.sim import (
-    message,
-    node,
-)
-
 from src.debug_utils import *
+from src.prob import random_variable
+from src.sim import message, node
 
 
 class Client(node.Node):
@@ -48,7 +44,9 @@ class Client(node.Node):
         msg_id = 0
         while True:
             inter_msg_gen_time = self.inter_msg_gen_time_rv.sample()
-            slog(DEBUG, self.env, self, "waiting", inter_msg_gen_time=inter_msg_gen_time)
+            slog(
+                DEBUG, self.env, self, "waiting", inter_msg_gen_time=inter_msg_gen_time
+            )
             yield self.env.timeout(inter_msg_gen_time)
 
             msg = message.Message(_id=msg_id, src_id=self._id, dst_id=self.dst_id)

@@ -1,11 +1,12 @@
 import math
-import numpy
 import random
+
+import numpy
 import scipy
 import scipy.stats
 
 
-class RandomVariable():
+class RandomVariable:
     def __init__(self, min_value: float, max_value: float):
         self.min_value = min_value
         self.max_value = max_value
@@ -43,10 +44,10 @@ class TruncatedNormal(RandomVariable):
         self.mu = mu
         self.sigma = sigma
 
-        lower, upper = 0, mu + 10*sigma
+        lower, upper = 0, mu + 10 * sigma
         self.max_value = upper
         self.dist = scipy.stats.truncnorm(
-            a=(lower - mu)/sigma, b=(upper - mu)/sigma, loc=mu, scale=sigma
+            a=(lower - mu) / sigma, b=(upper - mu) / sigma, loc=mu, scale=sigma
         )
 
     def __repr__(self):
@@ -78,12 +79,7 @@ class Exponential(RandomVariable):
         self.mu = mu
 
     def __repr__(self):
-        return (
-            "Exponential( \n"
-            f"\t D= {self.D} \n"
-            f"\t mu= {self.mu} \n"
-            ") \n"
-        )
+        return "Exponential( \n" f"\t D= {self.D} \n" f"\t mu= {self.mu} \n" ") \n"
 
     def to_latex(self) -> str:
         if self.D == 0:
@@ -95,25 +91,25 @@ class Exponential(RandomVariable):
         if x <= self.min_value:
             return 1
 
-        return math.exp(-self.mu*(x - self.D) )
+        return math.exp(-self.mu * (x - self.D))
 
     def cdf(self, x: float) -> float:
         if x <= self.min_value:
             return 0
 
-        return 1 - math.exp(-self.mu*(x - self.D) )
+        return 1 - math.exp(-self.mu * (x - self.D))
 
     def pdf(self, x: float) -> float:
         if x <= self.min_value:
             return 0
 
-        return self.mu*math.exp(-self.mu*(x - self.D) )
+        return self.mu * math.exp(-self.mu * (x - self.D))
 
     def mean(self) -> float:
-        return self.D + 1/self.mu
+        return self.D + 1 / self.mu
 
     def var(self) -> float:
-        return 1/self.mu**2
+        return 1 / self.mu**2
 
     def moment(self, i) -> float:
         return moment_ith(i, self)
@@ -121,7 +117,7 @@ class Exponential(RandomVariable):
     def laplace(self, s) -> float:
         check(self.D > 0, "D should be 0", D=self.D)
 
-        return self.mu/(s + self.mu)
+        return self.mu / (s + self.mu)
 
     def sample(self) -> float:
         return self.D + random.expovariate(self.mu)
@@ -147,13 +143,15 @@ class DiscreteUniform(RandomVariable):
         self.value_list = numpy.arange(self.min_value, self.max_value + 1)
         weight_list = [1 for _ in self.value_list]
         self.prob_list = [weight / sum(weight_list) for weight in weight_list]
-        self.dist = scipy.stats.rv_discrete(name="duniform", values=(self.value_list, self.prob_list))
+        self.dist = scipy.stats.rv_discrete(
+            name="duniform", values=(self.value_list, self.prob_list)
+        )
 
     def __repr__(self):
         return f"DiscreteUniform({self.min_value}, {self.max_value})"
 
     def mean(self) -> float:
-        return (self.max_value + self.min_value)/2
+        return (self.max_value + self.min_value) / 2
 
     def pdf(self, x: float) -> float:
         return self.dist.pmf(x)
@@ -163,7 +161,7 @@ class DiscreteUniform(RandomVariable):
             return 0
         elif x > self.max_value:
             return 1
-        return self.dist.cdf(math.floor(x) )
+        return self.dist.cdf(math.floor(x))
 
     def tail_prob(self, x: float) -> float:
         return 1 - self.cdf(x)
@@ -172,7 +170,7 @@ class DiscreteUniform(RandomVariable):
         return self.dist.moment(i)
 
     def sample(self) -> float:
-        return self.dist.rvs() # [0]
+        return self.dist.rvs()  # [0]
 
 
 class BoundedZipf(RandomVariable):
@@ -181,9 +179,11 @@ class BoundedZipf(RandomVariable):
         self.a = a
 
         self.value_list = numpy.arange(self.min_value, self.max_value + 1)
-        weight_list = [float(value)**(-a) for value in self.value_list]
+        weight_list = [float(value) ** (-a) for value in self.value_list]
         self.prob_list = [weight / sum(weight_l) for weight in weight_list]
-        self.dist = scipy.stats.rv_discrete(name="bounded_zipf", values=(self.value_list, self.prob_list))
+        self.dist = scipy.stats.rv_discrete(
+            name="bounded_zipf", values=(self.value_list, self.prob_list)
+        )
 
     def __repr__(self):
         return f"BoundedZipf([{self.min_value}, {self.max_value}], a= {self.a})"

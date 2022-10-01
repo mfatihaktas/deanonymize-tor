@@ -37,6 +37,8 @@ def test_plot_avg_time_to_deanonymize_vs_num_servers():
         num_servers_list.append(num_servers)
         E_time_to_deanonymize_list.append(E_time_to_deanonymize)
 
+    plot.plot(num_servers_list, E_time_to_deanonymize_list, color=NICE_BLUE, marker="x")
+
     fontsize = 14
     plot.xlabel(r"$N_s$", fontsize=fontsize)
     plot.ylabel(r"$E[T_d]$", fontsize=fontsize)
@@ -47,6 +49,6 @@ def test_plot_avg_time_to_deanonymize_vs_num_servers():
         r"$N_t = {}$".format(num_target_client)
     plot.title(title, fontsize=fontsize) # , y=1.05
     plot.gcf().set_size_inches(4, 3)
-    plot.savefig(f"plot_avg_time_to_deanonymize_vs_num_servers.png", bbox_inches="tight")
+    plot.savefig(f"plots/plot_avg_time_to_deanonymize_vs_num_servers.png", bbox_inches="tight")
     plot.gcf().clear()
     log(INFO, "Done.")

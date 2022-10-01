@@ -13,11 +13,11 @@ def test_plot_avg_time_to_deanonymize_vs_num_servers():
     inter_msg_gen_time_rv = random_variable.Exponential(mu=1)
     network_delay_rv = random_variable.DiscreteUniform(min_value=1, max_value=5)
     num_target_client = 1
-    num_samples = 1
+    num_samples = 5
 
     num_servers_list = []
     E_time_to_deanonymize_list = []
-    for num_servers in range(1, 2):
+    for num_servers in range(1, 7):
         log(DEBUG, f">> num_servers= {num_servers}")
 
         time_to_deanonymize_list = tor_module.sim_time_to_deanonymize_w_intersection_attack(
@@ -39,16 +39,19 @@ def test_plot_avg_time_to_deanonymize_vs_num_servers():
 
     plot.plot(num_servers_list, E_time_to_deanonymize_list, color=NICE_BLUE, marker="x")
 
+    # TODO: Add stdev with error margin bars.
+
     fontsize = 14
     plot.xlabel(r"$N_s$", fontsize=fontsize)
     plot.ylabel(r"$E[T_d]$", fontsize=fontsize)
     title = \
         r"$N_c = {}$, ".format(num_clients) + \
         r"$X \sim {}$, ".format(inter_msg_gen_time_rv.to_latex()) + \
-        r"$T_n \sim {}$, ".format(network_delay_rv.to_latex()) + \
-        r"$N_t = {}$".format(num_target_client)
+        r"$D \sim {}$, ".format(network_delay_rv.to_latex()) + \
+        r"$N_t = {}$".format(num_target_client) + "\n" \
+        r"$N_{\mathbf{samples}} = $" + "${}$".format(num_samples)
     plot.title(title, fontsize=fontsize) # , y=1.05
-    plot.gcf().set_size_inches(4, 3)
+    plot.gcf().set_size_inches(6, 6)
     plot.savefig(f"plots/plot_avg_time_to_deanonymize_vs_num_servers.png", bbox_inches="tight")
     plot.gcf().clear()
     log(INFO, "Done.")

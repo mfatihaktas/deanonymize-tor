@@ -83,9 +83,9 @@ class Exponential(RandomVariable):
 
     def to_latex(self) -> str:
         if self.D == 0:
-            return r"Exp(\mu={})".format(self.mu)
+            return r"{}(\mu={})".format("\mathbf{Exp}", self.mu)
 
-        return r"{} + Exp(\mu={})".format(self.D, self.mu)
+        return r"{} + {}(\mu={})".format(self.D, "\mathbf{Exp}", self.mu)
 
     def tail_prob(self, x: float) -> float:
         if x <= self.min_value:
@@ -151,7 +151,7 @@ class DiscreteUniform(RandomVariable):
         return f"DiscreteUniform({self.min_value}, {self.max_value})"
 
     def to_latex(self) -> str:
-        return f"DiscreteUniform[{self.min_value}, {self.max_value}]"
+        return "\mathbf{Uniform}" + f"[{self.min_value}, {self.max_value}]"
 
     def mean(self) -> float:
         return (self.max_value + self.min_value) / 2

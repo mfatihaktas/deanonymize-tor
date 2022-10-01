@@ -44,9 +44,9 @@ LOGGING_FORMAT = (
 formatter = logging.Formatter(LOGGING_FORMAT)
 # formatter = CustomFormatter()
 
-# LOGGER_NAME = "serv_rate"
+LOGGER_NAME = "deanonymize-tor"
 # logging.basicConfig(level=logging.INFO) #, format=LOGGING_FORMAT)
-logger = logging.getLogger()
+logger = logging.getLogger(LOGGER_NAME)
 logger.setLevel(logging.DEBUG)
 
 

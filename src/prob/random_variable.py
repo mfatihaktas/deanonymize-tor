@@ -150,6 +150,9 @@ class DiscreteUniform(RandomVariable):
     def __repr__(self):
         return f"DiscreteUniform({self.min_value}, {self.max_value})"
 
+    def to_latex(self) -> str:
+        return f"DiscreteUniform[{self.min_value}, {self.max_value}]"
+
     def mean(self) -> float:
         return (self.max_value + self.min_value) / 2
 

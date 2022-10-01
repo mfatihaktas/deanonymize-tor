@@ -90,9 +90,51 @@ class TorSystem():
             ")"
         )
 
+    def get_attack_completion_time(self) -> float:
+        return self.adversary.attack_completion_time
+
     def run(self):
         log(DEBUG, "Started")
 
         self.env.run(until=self.adversary.attack_process)
 
         log(DEBUG, "Done")
+
+
+def sim_time_to_deanonymize_w_intersection_attack(
+    num_clients: int,
+    num_servers: int,
+    inter_msg_gen_time_rv: random_variable.RandomVariable,
+    network_delay_rv: random_variable.RandomVariable,
+    num_target_client: int,
+    num_samples: int,
+) -> list[float]:
+    def sim() -> float:
+        env = simpy.Environment()
+
+        tor = TorSystem(
+            env=env,
+            num_clients=num_clients,
+            num_servers=num_servers,
+            inter_msg_gen_time_rv=inter_msg_gen_time_rv,
+            network_delay_rv=network_delay_rv,
+            num_target_client=num_target_client,
+        )
+
+        adversary = intersection_attack.Adversary_wIntersectionAttack(
+            env=env,
+            max_msg_delivery_time=network_delay_rv.max_value,
+            num_target_client=1,
+        )
+
+        tor.register_adversary(adversary=adversary)
+        tor.run()
+
+        return tor.get_attack_completion_time()
+
+    time_to_deanonymize_list = []
+    for _ in range(num_samples):
+        time_to_deanonymize = sim()
+        time_to_deanonymize_list.append(time_to_deanonymize)
+
+    return time_to_deanonymize_list

@@ -69,20 +69,10 @@ class Adversary_wIntersectionAttack(adversary_module.Adversary):
         self.attack_window_store = simpy.Store(env)
         self.interrupt_attack = None
         self.attack_process = env.process(self.run_attack())
+        self.attack_completion_time = None
 
     def __repr__(self):
         return f"Adversary_wIntersectionAttack(max_msg_delivery_time= {self.max_msg_delivery_time})"
-
-    # def put(self, node: node_module.Node):
-    #     if isinstance(node, client_module.Client):
-    #         self.client_sent_msg(client_id=node._id)
-    #     elif isinstance(node, server_module.Server):
-    #         self.server_recved_msg(server_id=node._id)
-    #     else:
-    #         raise RuntimeError(
-    #             "Unexpected node type \n"
-    #             f"\t node= {node}"
-    #         )
 
     def client_sent_msg(self, client_id: str):
         slog(
@@ -116,6 +106,7 @@ class Adversary_wIntersectionAttack(adversary_module.Adversary):
     def run_attack(self):
         slog(DEBUG, self.env, self, "Started")
 
+        attack_start_time = self.env.now
         while True:
             yield self.attack_window_store.get()
 
@@ -159,4 +150,5 @@ class Adversary_wIntersectionAttack(adversary_module.Adversary):
                 slog(DEBUG, self.env, self, "Wait interrupted by new attack window")
                 self.attack_window_store.put(attack_window)
 
-        slog(DEBUG, self.env, self, "Done")
+        self.attack_completion_time = self.env.now - attack_start_time
+        slog(DEBUG, self.env, self, "Done", attack_completion_time=self.attack_completion_time)

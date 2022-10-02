@@ -104,6 +104,12 @@ def log(level: int, _msg_: str, **kwargs):
     level_log_m[level](f"{_msg_}{pstr(**kwargs)}", extra=get_extra())
 
 
+# TODO:
+def log_vars(level: int, *args):
+    # How to get variable name from the variable?
+    level_log_m[level](f"{_msg_}{pstr(**kwargs)}", extra=get_extra())
+
+
 ## Always log
 def alog(level: int, _msg_: str, **kwargs):
     logger.critical("{}\n{}".format(_msg_, pstr(**kwargs)), extra=get_extra())

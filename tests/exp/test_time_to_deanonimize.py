@@ -9,16 +9,24 @@ from src.plot_utils import *
 
 
 def test_plot_avg_time_to_deanonymize_vs_num_servers():
-    num_clients = 2 # 10
+    num_clients = 5 # 10
     inter_msg_gen_time_rv = random_variable.Exponential(mu=1)
     network_delay_rv = random_variable.DiscreteUniform(min_value=1, max_value=5)
     num_target_client = 1
     num_samples = 5
 
+    log(INFO, "Started",
+        num_clients=num_clients,
+        inter_msg_gen_time_rv=inter_msg_gen_time_rv,
+        network_delay_rv=network_delay_rv,
+        num_target_client=num_target_client,
+        num_samples=num_samples,
+    )
+
     num_servers_list = []
     E_time_to_deanonymize_list = []
     for num_servers in range(1, 7):
-        log(DEBUG, f">> num_servers= {num_servers}")
+        log(INFO, f">> num_servers= {num_servers}")
 
         time_to_deanonymize_list = tor_module.sim_time_to_deanonymize_w_intersection_attack(
             num_clients=num_clients,
@@ -30,7 +38,7 @@ def test_plot_avg_time_to_deanonymize_vs_num_servers():
         )
 
         E_time_to_deanonymize = numpy.mean(time_to_deanonymize_list)
-        log(DEBUG, "",
+        log(INFO, "",
             E_time_to_deanonymize=E_time_to_deanonymize,
         )
 
